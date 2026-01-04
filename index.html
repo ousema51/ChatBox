@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ChatBox</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <main class="main">
+        <section class="cardleft">
+            <a href="#">Logo</a>
+        </section>
+        <section class="cardright">
+            <div class="chat-input-container">
+                <input
+                    type="text"
+                    class="chat-input"
+                    id="chatInput"
+                    placeholder="Type your message..."
+                />
+                <button id="sendBtn" class="send-btn">
+                    ➤
+                </button>
+            </div>
+            <div id="chatMessages" class="chat-messages"></div>
+        </section>
+    </main>
+    <script src="script.js"></script>
+</body>
+</html>
