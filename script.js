@@ -1,34 +1,48 @@
+// Get elements from HTML
+const input = document.getElementById("chatInput");
+const sendBtn = document.getElementById("sendBtn");
+const chatMessages = document.getElementById("chatMessages");
 
-  const input = document.getElementById("chatInput");
-  const sendBtn = document.getElementById("sendBtn");
-  const chatMessages = document.getElementById("chatMessages");
+// Add a message bubble to the chat
+function addMessage(text, sender) {
+  const message = document.createElement("div");
+  message.className = `message ${sender}`;
+  message.textContent = text;
 
-  function sendMessage() {
-    const text = input.value.trim();
-    if (text === "") return;
+  chatMessages.appendChild(message);
+  chatMessages.scrollTop = chatMessages.scrollHeight;
+}
 
-    // Create message bubble
-    const message = document.createElement("div");
-    message.classList.add("message", "user");
-    message.textContent = text;
+// Send message to backend + receive AI reply
+async function sendMessage() {
+  const text = input.value.trim();
+  if (text === "") return;
 
-    // Add to chat
-    chatMessages.appendChild(message);
+  // Show user message
+  addMessage(text, "user");
+  input.value = "";
 
-    // Clear input
-    input.value = "";
+  // Show temporary AI message
+  addMessage("Thinking...", "ai");
 
-    // Auto scroll
-    chatMessages.scrollTop = chatMessages.scrollHeight;
+  try {
+    const response = await fetch("/api/chat", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({ message: text }),
+    });
 
-    // AI response will go here later
-    console.log("User sent:", text);
-  }
+    const data = await response.json();
 
-  sendBtn.addEventListener("click", sendMessage);
+    // Remove "Thinking..." message
+    const thinkingMsg = document.querySelector(".message.ai:last-child");
+    if (thinkingMsg) thinkingMsg.remove();
 
-  input.addEventListener("keydown", (e) => {
-    if (e.key === "Enter") {
-      sendMessage();
-    }
-  });
+    // Get AI text
+    const aiText =
+      data.choices &&
+      data.choices[0] &&
+      data.choices[0].message &&
+      data.choices[0].me
