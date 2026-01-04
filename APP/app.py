@@ -1,8 +1,9 @@
 from flask import Flask, request, jsonify
 import requests
 import os
-
+from flask_cors import CORS
 app = Flask(__name__)
+CORS(app)
 
 OPENROUTER_API_KEY = os.environ.get("OPENROUTER_API_KEY")
 
