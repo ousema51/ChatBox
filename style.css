@@ -22,9 +22,9 @@
     text-decoration: none;
     font-size: 1.1rem;
 }
-.cartleft a img{
+.cardleft a img{
     width: 10%;
-}    
+}
 .cardright {
     display: flex;
     flex: 4;
