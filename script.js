@@ -22,10 +22,11 @@ function addMessage(text, sender) {
 const menuBtn = document.getElementById("menuBtn");
 const sidebar = document.getElementById("sidebar");
 
-menuBtn.addEventListener("click", () => {
-  sidebar.classList.toggle("open");
-});
-
+if (menuBtn && sidebar) {
+  menuBtn.addEventListener("click", () => {
+    sidebar.classList.toggle("open");
+  });
+}
 // --- Backend URL ---
 const VERCEL_API_URL = "https://chat-box-dun.vercel.app/api/chat";
 
