@@ -1,37 +1,45 @@
 from flask import Flask, request, jsonify
-import requests
-import os
-from flask_cors import CORS
+import requests, os, uuid
+
 app = Flask(__name__)
-CORS(app)
 
-OPENROUTER_API_KEY = os.environ.get("OPENROUTER_API_KEY")
+OPENROUTER_API_KEY = os.getenv("OPENROUTER_API_KEY")
 
-@app.route("/", methods=["POST"])
+conversations = {}
+
+@app.route("/api/chat", methods=["POST"])
 def chat():
-    data = request.get_json()
+    data = request.json
+    session_id = data.get("session_id")
     user_message = data.get("message")
 
-    headers = {
-        "Authorization": f"Bearer {OPENROUTER_API_KEY}",
-        "Content-Type": "application/json",
-        # Optional but recommended by OpenRouter
-        "HTTP-Referer": "https://your-site.vercel.app",
-        "X-Title": "Chatbox Learning Project"
-    }
-
-    payload = {
-        "model": "deepseek/deepseek-chat",
-        "messages": [
-            {"role": "user", "content": user_message}
+    if session_id not in conversations:
+        conversations[session_id] = [
+            {"role": "system", "content": "You are a helpful assistant."}
         ]
-    }
+
+    conversations[session_id].append({
+        "role": "user",
+        "content": user_message
+    })
 
     response = requests.post(
         "https://openrouter.ai/api/v1/chat/completions",
-        headers=headers,
-        json=payload,
-        timeout=30
+        headers={
+            "Authorization": f"Bearer {OPENROUTER_API_KEY}",
+            "Content-Type": "application/json"
+        },
+        json={
+            "model": "deepseek/deepseek-chat",
+            "messages": conversations[session_id]
+        }
     )
 
-    return jsonify(response.json())
+    ai_reply = response.json()["choices"][0]["message"]["content"]
+
+    conversations[session_id].append({
+        "role": "assistant",
+        "content": ai_reply
+    })
+
+    return jsonify({"reply": ai_reply})
