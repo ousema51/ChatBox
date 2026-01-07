@@ -3,6 +3,14 @@ const input = document.getElementById("chatInput");
 const sendBtn = document.getElementById("sendBtn");
 const chatMessages = document.getElementById("chatMessages");
 
+// ---- SESSION ID (DO NOT TOUCH AFTER ADDING) ----
+let sessionId = localStorage.getItem("session_id");
+
+if (!sessionId) {
+  sessionId = crypto.randomUUID();
+  localStorage.setItem("session_id", sessionId);
+}
+
 // --- Helper function to add messages ---
 function addMessage(text, sender) {
   const msg = document.createElement("div");
@@ -37,7 +45,10 @@ async function sendMessage() {
     const response = await fetch(VERCEL_API_URL, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ message: text }),
+      body: JSON.stringify({
+        message: text,
+        session_id: sessionId
+      }),
     });
 
     const data = await response.json();
