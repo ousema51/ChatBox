@@ -11,6 +11,12 @@ function addMessage(text, sender) {
   chatMessages.appendChild(msg);
   chatMessages.scrollTop = chatMessages.scrollHeight;
 }
+const menuBtn = document.getElementById("menuBtn");
+const sidebar = document.getElementById("sidebar");
+
+menuBtn.addEventListener("click", () => {
+  sidebar.classList.toggle("open");
+});
 
 // --- Backend URL ---
 const VERCEL_API_URL = "https://chat-box-dun.vercel.app/";
