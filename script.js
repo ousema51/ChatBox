@@ -27,7 +27,7 @@ menuBtn.addEventListener("click", () => {
 });
 
 // --- Backend URL ---
-const VERCEL_API_URL = "https://chat-box-dun.vercel.app/";
+const VERCEL_API_URL = "https://chat-box-dun.vercel.app/api/chat";
 
 // --- Send message function ---
 async function sendMessage() {
@@ -58,8 +58,7 @@ async function sendMessage() {
     if (thinkingMsg) thinkingMsg.remove();
 
     // Get AI response
-    const aiText =
-      data.choices?.[0]?.message?.content || "No response from AI";
+    const aiText = data.reply || "No response from AI";
 
     addMessage(aiText, "ai");
   } catch (err) {
