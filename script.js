@@ -67,6 +67,8 @@ async function sendMessage() {
       const thinkingMsg = document.querySelector(".message.ai:last-child");
       if (thinkingMsg) thinkingMsg.remove();
 
+      
+      console.log("IMAGE STRING START:", data.image.slice(0, 50));
       addImage(data.image);
 
     } catch (err) {
