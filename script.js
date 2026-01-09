@@ -35,35 +35,71 @@ async function sendMessage() {
   const text = input.value.trim();
   if (!text) return;
 
-  // Show user message
   addMessage(text, "user");
   input.value = "";
 
-  // Show temporary AI message
+  // IMAGE MODE
+  if (text.startsWith("/image")) {
+    const prompt = text.replace("/image", "").trim();
+
+    if (!prompt) {
+      addMessage("Please provide an image prompt.", "ai");
+      return;
+    }
+
+    addMessage("Generating image...", "ai");
+
+    try {
+      const response = await fetch(
+        "https://chat-box-dun.vercel.app/api/image",
+        {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ prompt })
+        }
+      );
+
+      const data = await response.json();
+
+      // Remove "Generating image..."
+      const thinkingMsg = document.querySelector(".message.ai:last-child");
+      if (thinkingMsg) thinkingMsg.remove();
+
+      addImage(data.image);
+
+    } catch (err) {
+      console.error(err);
+      addMessage("Image generation failed.", "ai");
+    }
+
+    return;
+  }
+
+  // CHAT MODE (normal text)
   addMessage("Thinking...", "ai");
 
   try {
-    const response = await fetch(VERCEL_API_URL, {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({
-        message: text,
-        session_id: sessionId
-      }),
-    });
+    const response = await fetch(
+      "https://chat-box-dun.vercel.app/api/chat",
+      {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          message: text,
+          session_id: sessionId
+        })
+      }
+    );
 
     const data = await response.json();
 
-    // Remove "Thinking..."
     const thinkingMsg = document.querySelector(".message.ai:last-child");
     if (thinkingMsg) thinkingMsg.remove();
 
-    // Get AI response
-    const aiText = data.reply || "No response from AI";
+    addMessage(data.reply, "ai");
 
-    addMessage(aiText, "ai");
   } catch (err) {
-    console.error("Fetch error:", err);
+    console.error(err);
     addMessage("Error contacting AI server.", "ai");
   }
 }
@@ -73,3 +109,11 @@ sendBtn.addEventListener("click", sendMessage);
 input.addEventListener("keydown", (e) => {
   if (e.key === "Enter") sendMessage();
 });
+
+function addImage(base64Image) {
+  const img = document.createElement("img");
+  img.src = base64Image;
+  img.className = "message ai image";
+  chatMessages.appendChild(img);
+  chatMessages.scrollTop = chatMessages.scrollHeight;
+}
