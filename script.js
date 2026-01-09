@@ -118,6 +118,8 @@ function addImage(base64Image) {
   const img = document.createElement("img");
   img.src = base64Image;
   img.className = "message ai image";
+  img.alt = "Generated image";
+  img.loading = "lazy";
   chatMessages.appendChild(img);
   chatMessages.scrollTop = chatMessages.scrollHeight;
 }
