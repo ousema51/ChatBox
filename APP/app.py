@@ -52,33 +52,30 @@ def chat():
 
     return jsonify({ "reply": ai_reply })
 
-
 @app.route("/api/image", methods=["POST"])
 def image():
     prompt = request.json.get("prompt")
 
     if not prompt:
-        return jsonify({"error": "No prompt provided"}), 400
+        return jsonify({"error": "No prompt"}), 400
 
     payload = {
-        "data": [
-            prompt,
-            1024,
-            1024,
-            9,
-            42,
-            True
-        ]
+        "data": [prompt, 1024, 1024, 9, 42, True]
     }
 
-    response = requests.post(
-        HF_Z_IMAGE_TURBO,
-        json=payload,
-        timeout=120
-    )
+    try:
+        response = requests.post(
+            HF_Z_IMAGE_TURBO,
+            json=payload,
+            timeout=110
+        )
+    except requests.exceptions.Timeout:
+        return jsonify({"error": "HF Space timeout"}), 504
+    except requests.exceptions.RequestException as e:
+        return jsonify({"error": str(e)}), 500
 
     if response.status_code != 200:
-        return jsonify({"error": "HF Space error"}), 500
+        return jsonify({"error": "HF returned non-200"}), 500
 
     result = response.json()
 
@@ -88,5 +85,3 @@ def image():
         image_data = "data:image/png;base64," + image_data
 
     return jsonify({ "image": image_data })
-
-    return jsonify({ "image": image_base64 })
