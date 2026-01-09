@@ -144,8 +144,10 @@ body {
 }
 .message.image {
   max-width: 70%;
+  display: block;
   border-radius: 14px;
   margin: 12px 0;
+  object-fit: contain;
 }
 
 /* 📱 Mobile */
