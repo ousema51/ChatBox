@@ -7,6 +7,8 @@ CORS(app)  # <-- ADD THIS
 
 OPENROUTER_API_KEY = os.getenv("OPENROUTER_API_KEY")
 
+HF_Z_IMAGE_TURBO = "https://mrfakename-z-image-turbo.hf.space/run/predict"
+
 conversations = {}
 
 @app.route("/api/chat", methods=["POST"])
@@ -49,3 +51,32 @@ def chat():
     })
 
     return jsonify({ "reply": ai_reply })
+
+
+@app.route("/api/image", methods=["POST"])
+def image():
+    prompt = request.json.get("prompt")
+
+    payload = {
+        "data": [
+            prompt,   # prompt
+            1024,     # height
+            1024,     # width
+            9,        # inference steps
+            42,       # seed
+            True      # randomize seed
+        ]
+    }
+
+    response = requests.post(
+        HF_Z_IMAGE_TURBO,
+        json=payload,
+        timeout=120
+    )
+
+    result = response.json()
+
+    # Gradio returns a base64 image
+    image_base64 = result["data"][0]
+
+    return jsonify({ "image": image_base64 })
