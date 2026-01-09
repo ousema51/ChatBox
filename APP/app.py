@@ -82,6 +82,11 @@ def image():
 
     result = response.json()
 
-    image_base64 = result["data"][0]["data"]
+    image_data = result["data"][0]["data"]
+
+    if not image_data.startswith("data:image"):
+        image_data = "data:image/png;base64," + image_data
+
+    return jsonify({ "image": image_data })
 
     return jsonify({ "image": image_base64 })
