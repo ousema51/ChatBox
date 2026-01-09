@@ -60,6 +60,8 @@ async function sendMessage() {
       );
 
       const data = await response.json();
+      console.log("IMAGE API RESPONSE:", data);
+
 
       // Remove "Generating image..."
       const thinkingMsg = document.querySelector(".message.ai:last-child");
