@@ -142,6 +142,11 @@ body {
     border-radius: 10px;
     z-index: 1000;
 }
+.message.image {
+  max-width: 70%;
+  border-radius: 14px;
+  margin: 12px 0;
+}
 
 /* 📱 Mobile */
 @media (max-width: 768px) {
