@@ -57,14 +57,17 @@ def chat():
 def image():
     prompt = request.json.get("prompt")
 
+    if not prompt:
+        return jsonify({"error": "No prompt provided"}), 400
+
     payload = {
         "data": [
-            prompt,   # prompt
-            1024,     # height
-            1024,     # width
-            9,        # inference steps
-            42,       # seed
-            True      # randomize seed
+            prompt,
+            1024,
+            1024,
+            9,
+            42,
+            True
         ]
     }
 
@@ -74,9 +77,11 @@ def image():
         timeout=120
     )
 
+    if response.status_code != 200:
+        return jsonify({"error": "HF Space error"}), 500
+
     result = response.json()
 
-    # Gradio returns a base64 image
-    image_base64 = result["data"][0]
+    image_base64 = result["data"][0]["data"]
 
     return jsonify({ "image": image_base64 })
